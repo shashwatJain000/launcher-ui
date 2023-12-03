@@ -1,25 +1,34 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import './App.css'; // Import the CSS file for styling
+const App = () => {
+    const [apps, setApps] = useState([]);
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+    useEffect(() => {
+        // Fetch the list of applications from the server
+        axios.get('http://localhost:3001/apps')
+            .then(response => setApps(response.data))
+            .catch(error => console.error('Error fetching applications:', error));
+    }, []);
+
+    const launchApplication = (application) => {
+        // Open the application in a new tab
+        window.open(application.path, '_blank');
+    };
+
+    return (
+        <div className="app-container">
+            <h1 id="heading">Launcher UI</h1>
+            <div className="app-icons-container">
+                {apps.map(app => (
+                    <div className="icons" key={app.id} onClick={() => launchApplication(app)}>
+                        <img src={app.icon} alt={app.name} />
+                        <p>{app.name}</p>
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+};
 
 export default App;
